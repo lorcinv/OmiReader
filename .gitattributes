@@ -1,0 +1,10 @@
+# Archived sources use tools/build.ps1; historical upstream publishing jobs are not OmiReader build inputs.
+.github/workflows export-ignore
+.github/scripts export-ignore
+.github/dependabot.yml export-ignore
+.github/ISSUE_TEMPLATE/01-bugReport.yml export-ignore
+.github/ISSUE_TEMPLATE/02-featureRequest.yml export-ignore
+app/google-services.json export-ignore
+docs/analysis export-ignore
+docs/status export-ignore
+docs/verification export-ignore

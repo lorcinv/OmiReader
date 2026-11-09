@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <io.legado.app.lib.prefs.Preference android:key="update_log" android:title="OmiReader" android:summary="@string/version" app:iconSpaceReserved="false" />
+    <io.legado.app.lib.prefs.Preference android:key="license" android:title="@string/omi_license" android:summary="@string/omi_license_note" app:iconSpaceReserved="false" />
+    <io.legado.app.lib.prefs.Preference android:key="upstream" android:title="@string/omi_core_source" android:summary="@string/omi_core_credits" app:iconSpaceReserved="false" />
+    <io.legado.app.lib.prefs.Preference android:key="privacyPolicy" android:title="@string/omi_privacy" app:iconSpaceReserved="false" />
+    <io.legado.app.lib.prefs.Preference android:key="crashLog" android:title="@string/omi_local_logs" app:iconSpaceReserved="false" />
+</androidx.preference.PreferenceScreen>

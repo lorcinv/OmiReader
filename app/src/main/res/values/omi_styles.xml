@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="OmiSheetAnimation">
+        <item name="android:windowEnterAnimation">@anim/omi_sheet_enter</item>
+        <item name="android:windowExitAnimation">@anim/omi_sheet_exit</item>
+    </style>
+</resources>

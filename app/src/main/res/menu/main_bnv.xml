@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="bottom_navigation_view">
+
+    <item
+        android:id="@+id/menu_bookshelf"
+        android:icon="@drawable/ic_bottom_books"
+        android:title="@string/bookshelf" />
+    <item
+        android:id="@+id/menu_discovery"
+        android:icon="@drawable/ic_bookmark"
+        android:title="@string/omi_bookmarks" />
+    <item
+        android:id="@+id/menu_rss"
+        android:icon="@drawable/ic_history"
+        android:title="@string/omi_recent" />
+    <item
+        android:id="@+id/menu_my_config"
+        android:icon="@drawable/ic_cfg_other"
+        android:title="@string/setting" />
+
+</menu>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:divider="@color/transparent" app:allowDividerBelow="false">
+    <io.legado.app.lib.prefs.PreferenceCategory android:title="阅读" app:iconSpaceReserved="false">
+        <io.legado.app.lib.prefs.Preference android:icon="@drawable/ic_cfg_theme" android:key="omi_theme" android:title="阅读主题" android:summary="雾蓝 · 北境 · 暖沙 · 夜色" app:iconSpaceReserved="false" />
+        <io.legado.app.lib.prefs.Preference android:icon="@drawable/ic_bookmark" android:key="bookmark" android:title="书签与笔记" android:summary="回到标记过的文字" app:iconSpaceReserved="false" />
+        <io.legado.app.lib.prefs.Preference android:icon="@drawable/ic_history" android:key="readRecord" android:title="阅读记录" android:summary="最近读过的书与阅读时长" app:iconSpaceReserved="false" />
+    </io.legado.app.lib.prefs.PreferenceCategory>
+    <io.legado.app.lib.prefs.PreferenceCategory android:title="书籍与数据" app:iconSpaceReserved="false">
+        <io.legado.app.lib.prefs.Preference android:icon="@drawable/ic_cfg_source" android:key="bookSourceManage" android:title="书源管理" android:summary="按需导入书源，搜索网络书籍" app:iconSpaceReserved="false" />
+        <io.legado.app.lib.prefs.Preference android:icon="@drawable/ic_cfg_backup" android:key="web_dav_setting" android:title="备份与恢复" android:summary="保存书架、书签与设置" app:iconSpaceReserved="false" />
+        <io.legado.app.lib.prefs.Preference android:icon="@drawable/ic_folder_outline" android:key="fileManage" android:title="本地文件" app:iconSpaceReserved="false" />
+    </io.legado.app.lib.prefs.PreferenceCategory>
+    <io.legado.app.lib.prefs.PreferenceCategory android:title="更多" app:iconSpaceReserved="false">
+        <io.legado.app.lib.prefs.Preference android:icon="@drawable/ic_cfg_other" android:key="setting" android:title="高级设置" android:summary="字体与操作习惯在阅读页中调整" app:iconSpaceReserved="false" />
+        <io.legado.app.lib.prefs.Preference android:icon="@drawable/ic_cfg_about" android:key="about" android:title="关于 OmiReader" app:iconSpaceReserved="false" />
+    </io.legado.app.lib.prefs.PreferenceCategory>
+</androidx.preference.PreferenceScreen>

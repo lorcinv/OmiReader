@@ -1,0 +1,26 @@
+name: 问题反馈 / Bug report
+description: 报告 OmiReader 的问题 / Report an OmiReader problem
+body:
+  - type: input
+    id: version
+    attributes:
+      label: OmiReader 版本 / Version
+      placeholder: 1.1.2
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: 设备和 Android 版本 / Device and Android version
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 问题和复现步骤 / Problem and steps to reproduce
+      description: 说明文件格式、操作和预期结果。 / Include the file format, actions and expected result.
+    validations:
+      required: true
+  - type: textarea
+    id: attachments
+    attributes:
+      label: 截图或补充信息 / Screenshots or additional information
+      description: 仅提供可公开分享的资料。 / Include only material you can share publicly.

@@ -1,0 +1,34 @@
+[
+  {
+    "themeName": "雾蓝",
+    "isNightTheme": false,
+    "primaryColor": "#f8f8f7",
+    "accentColor": "#4b669b",
+    "backgroundColor": "#f8f8f7",
+    "bottomBackground": "#ffffff"
+  },
+  {
+    "themeName": "北境",
+    "isNightTheme": false,
+    "primaryColor": "#e2e8f2",
+    "accentColor": "#4f658b",
+    "backgroundColor": "#e2e8f2",
+    "bottomBackground": "#f4f6fa"
+  },
+  {
+    "themeName": "暖沙",
+    "isNightTheme": false,
+    "primaryColor": "#f3efe9",
+    "accentColor": "#806247",
+    "backgroundColor": "#f3efe9",
+    "bottomBackground": "#fdfbf8"
+  },
+  {
+    "themeName": "夜色",
+    "isNightTheme": true,
+    "primaryColor": "#2e3440",
+    "accentColor": "#88c0d0",
+    "backgroundColor": "#2e3440",
+    "bottomBackground": "#363e4c"
+  }
+]
