@@ -123,4 +123,5 @@
     <string name="omi_sources_help">先匯入並啟用書源，再依書名或作者搜尋。已匯入的書源保存在管理頁中，應用程式不預設書源。</string>
     <string name="omi_disclaimer">免責聲明</string>
     <string name="omi_disclaimer_text">OmiReader 提供閱讀與書源規則工具。書籍內容、存取條件與可用性由所設定的網站決定，請使用獲得授權的內容，並遵守相關網站規則與著作權要求。\n\n書源規則可以執行解析腳本並連線至其設定的網站。請匯入可信的規則，避免提供與閱讀無關的私人資訊。\n\nWebDAV 使用你設定的伺服器與帳號直接備份、同步資料。備份可能包含書架、閱讀進度與書源規則，請選擇可信的服務並妥善保管帳號憑證。</string>
+    <string name="omi_link_unavailable">無法定位書內連結</string>
 </resources>

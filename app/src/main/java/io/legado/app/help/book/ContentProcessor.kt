@@ -10,6 +10,7 @@ import io.legado.app.data.entities.ReplaceRule
 import io.legado.app.exception.RegexTimeoutException
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.config.ReadBookConfig
+import io.legado.app.model.localBook.LocalBookLinks
 import io.legado.app.utils.ChineseUtils
 import io.legado.app.utils.escapeRegex
 import io.legado.app.utils.replace
@@ -106,10 +107,11 @@ class ContentProcessor private constructor(
             if (!removeSameTitleCache.contains(fileName)) try {
                 val name = Pattern.quote(book.name)
                 var title = chapter.title.escapeRegex().replace(spaceRegex, "\\\\s*")
-                var matcher = Pattern.compile("^(\\s|\\p{P}|${name})*${title}(\\s)*")
+                val metadata = if (mContent.contains(LocalBookLinks.VERSION) || mContent.contains("\uE000omi:")) "|${LocalBookLinks.tokenPattern.pattern}" else ""
+                var matcher = Pattern.compile("^(\\s|\\p{P}|${name}$metadata)*${title}(\\s)*")
                     .matcher(mContent)
                 if (matcher.find()) {
-                    mContent = mContent.substring(matcher.end())
+                    mContent = LocalBookLinks.retainedPrefix(mContent.substring(0, matcher.end())) + mContent.substring(matcher.end())
                     sameTitleRemoved = true
                 } else if (useReplace && book.getUseReplaceRule()) {
                     title = Pattern.quote(
@@ -118,10 +120,10 @@ class ContentProcessor private constructor(
                             chineseConvert = false
                         )
                     )
-                    matcher = Pattern.compile("^(\\s|\\p{P}|${name})*${title}(\\s)*")
+                    matcher = Pattern.compile("^(\\s|\\p{P}|${name}$metadata)*${title}(\\s)*")
                         .matcher(mContent)
                     if (matcher.find()) {
-                        mContent = mContent.substring(matcher.end())
+                        mContent = LocalBookLinks.retainedPrefix(mContent.substring(0, matcher.end())) + mContent.substring(matcher.end())
                         sameTitleRemoved = true
                     }
                 }
@@ -188,19 +190,37 @@ class ContentProcessor private constructor(
             mContent = mContent.replace('\u00A0', ' ')
         }
         val contents = arrayListOf<String>()
+        val links = arrayListOf<LocalBookLinks.Paragraph>()
+        val decoder = if (mContent.contains("\uE000omi:")) LocalBookLinks.Decoder() else null
+        val pendingAnchors = linkedSetOf<String>()
         mContent.split("\n").forEach { str ->
-            val paragraph = str.trim {
+            val decoded = decoder?.read(str)
+            val text = decoded?.text ?: str
+            val paragraph = text.trim {
                 it.code <= 0x20 || it == '　'
             }
             if (paragraph.isNotEmpty()) {
+                if (decoded != null) {
+                    val start = text.indexOf(paragraph)
+                    val indent = if (contents.isEmpty() && includeTitle) "" else ReadBookConfig.paragraphIndent
+                    val info = decoded.normalize(start, start + paragraph.length, indent.length)
+                    links.add(info.copy(anchors = pendingAnchors.associateWith { 0 } + info.anchors))
+                    pendingAnchors.clear()
+                }
                 if (contents.isEmpty() && includeTitle) {
                     contents.add(paragraph)
                 } else {
                     contents.add("${ReadBookConfig.paragraphIndent}$paragraph")
                 }
+            } else {
+                decoded?.let { pendingAnchors.addAll(it.anchors.keys) }
             }
         }
-        return BookContent(sameTitleRemoved, contents, effectiveReplaceRules)
+        if (pendingAnchors.isNotEmpty() && links.isNotEmpty()) {
+            val last = links.last()
+            links[links.lastIndex] = last.copy(anchors = last.anchors + pendingAnchors.associateWith { contents.last().length })
+        }
+        return BookContent(sameTitleRemoved, contents, effectiveReplaceRules, links)
     }
 
 }

@@ -31,6 +31,7 @@ data class TextChapter(
 ) : LayoutProgressListener {
 
     private val textPages = arrayListOf<TextPage>()
+    val localAnchors = java.util.concurrent.ConcurrentHashMap<String, Int>()
     val pages: List<TextPage> get() = textPages
 
     private var layout: TextChapterLayout? = null

@@ -1,5 +1,35 @@
 # Changelog
 
+## 1.1.3 · 2026-11-09
+
+### 简体中文
+
+- 修复 EPUB 正文目录、跨章节链接和章内锚点跳转，支持相对路径与中文锚点。
+- 修复 MOBI / AZW3 正文目录与位置链接，按书内目标定位；修正 KF8 最后一章内容为空的问题。
+- 已导入 EPUB 的旧章节缓存自动更新，无需重新导入。跳转后保留阅读位置，沿用现有阅读设置和界面。
+
+### 繁體中文
+
+- 修復 EPUB 正文目錄、跨章節連結與章內錨點跳轉，支援相對路徑和中文錨點。
+- 修復 MOBI / AZW3 正文目錄與位置連結，依書內目標定位；修正 KF8 最後一章內容為空的問題。
+- 已匯入 EPUB 的舊章節快取會自動更新，無須重新匯入。跳轉後保存閱讀位置，沿用既有閱讀設定與介面。
+
+### English
+
+- Fixed in-book EPUB contents links, cross-chapter navigation and anchors, including relative paths and Unicode fragments.
+- Fixed MOBI / AZW3 contents and position links, and empty content in the last KF8 chapter.
+- Existing EPUB chapter caches refresh automatically without reimporting books. Link navigation saves the reading position and retains the existing reader controls.
+
+### 日本語
+
+- EPUB 本文中の目次リンク、章をまたぐ移動、章内のアンカーを修正しました。相対パスと日本語・中国語のアンカーにも対応します。
+- MOBI / AZW3 の目次・位置リンクと、KF8 の最終章が空になる問題を修正しました。
+- 取り込み済み EPUB の古い章キャッシュは自動更新されます。再取り込みは不要です。移動先の読書位置を保存し、既存の読書設定と画面を保持します。
+
+### Verification
+
+36 Android emulator checks passed, including native-page taps on EPUB, KF6 and KF8 links, Unicode anchors, old-cache migration, return navigation, saved reading positions and the existing reader features. Installing 1.1.3 over 1.1.2 preserved books and the exact reading page. The signing certificate is unchanged. Physical-device validation has not been performed.
+
 ## 1.1.2 · 2026-11-09
 
 ### 简体中文

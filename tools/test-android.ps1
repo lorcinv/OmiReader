@@ -7,6 +7,7 @@ param(
         'io.legado.app.OmiLocalFormatsInstrumentedTest',
         'io.legado.app.OmiV2InstrumentedTest',
         'io.legado.app.OmiSourceInstrumentedTest',
+        'io.legado.app.LocalBookLinksInstrumentedTest',
         'io.legado.app.model.localBook.RichDocumentImportTest'
     )
 )
@@ -16,7 +17,7 @@ if (!$Adb) {
     $Adb = Join-Path (Split-Path -Parent $root) 'OmiComic\.cache\android-tools\platform-tools\adb.exe'
 }
 if (!(Test-Path -LiteralPath $Adb)) { throw 'Pass the Android platform-tools adb path with -Adb.' }
-$logDir = Join-Path $root 'docs\verification\1.1.2'
+$logDir = Join-Path $root 'docs\verification\1.1.3'
 New-Item -ItemType Directory -Force -Path $logDir | Out-Null
 $failed = @()
 foreach ($testClass in $Classes) {

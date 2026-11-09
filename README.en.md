@@ -4,7 +4,7 @@
 
 [简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md)
 
-[Download APK](https://github.com/lorcinv/OmiReader/releases/latest) · [v1.1.2](https://github.com/lorcinv/OmiReader/releases/tag/v1.1.2)
+[Download APK](https://github.com/lorcinv/OmiReader/releases/latest) · [v1.1.3](https://github.com/lorcinv/OmiReader/releases/tag/v1.1.3)
 
 Android 5.0+ · TXT / EPUB / MOBI / AZW3 / DOCX / Markdown · GPL-3.0
 
@@ -23,7 +23,7 @@ OmiReader is a clean Android ebook reader centered on local books, with detailed
 
 - **Organize your library**: shelves, virtual folders and stacked covers; choose a list or a 2–6 column grid. Long-press to organize and reorder books. A page control appears when the library spans multiple pages.
 - **Adjust your reading**: font, size, weight, line and letter spacing, paragraph spacing, indentation, margins, page colors and backgrounds. Choose Mist, Nord, Sand or Night.
-- **Find your place**: a bottom panel switches between chapters and bookmarks, with a fixed bookmark button at the top. The progress slider shows the page as you drag; each book keeps its own reading position.
+- **Find your place**: a bottom panel switches between chapters and bookmarks. Contents links inside EPUB and MOBI / AZW3 books jump to chapters or specific passages. A fixed bookmark button sits at the top, the progress slider shows the page as you drag, and each book keeps its own reading position.
 - **Keep the interface simple**: one row of reading tools, immersive fullscreen, gray inactive navigation and a clear selected state. No advertising SDK and no registration requirement.
 - **Connect when needed**: import compatible Legado 3.0 JSON source rules and search for books. Back up, restore and sync through your own WebDAV server. No third-party book sources or books are bundled.
 
@@ -41,7 +41,7 @@ Files must be unencrypted. Use [OmiComic](https://github.com/lorcinv/OmiComic) f
 
 ## Get started
 
-1. Download the APK from [Releases](https://github.com/lorcinv/OmiReader/releases/latest) and install it. Version 1.1.2 uses the same signing certificate as earlier OmiReader builds and supports an in-place upgrade.
+1. Download the APK from [Releases](https://github.com/lorcinv/OmiReader/releases/latest) and install it. Version 1.1.3 uses the same signing certificate as earlier OmiReader builds and supports an in-place upgrade.
 2. Tap the plus button above the library to choose a local book. The More menu contains batch import and library display options.
 3. Tap the middle of a reading page to reveal the toolbar. Reading settings keeps the full typography and page-color controls.
 4. When creating a shelf or folder, enter its name and tap Done at the top right to save.
@@ -55,7 +55,7 @@ Library organization, bookmarks and reading positions are stored on the device. 
 
 The app and project documentation are available in Simplified Chinese, Traditional Chinese, English and Japanese. See [BUILDING.md](docs/BUILDING.md) for builds, signing and icon generation, and [CHANGELOG.md](CHANGELOG.md) for version history.
 
-Version 1.1.2 passed 31 Android emulator checks, including an upgrade preserving books and reading progress. Physical-device validation has not been performed. Report problems through [Issues](https://github.com/lorcinv/OmiReader/issues).
+Version 1.1.3 passed 36 Android emulator checks covering in-book links, anchors and existing reader features. An in-place upgrade preserved books and reading progress. Physical-device validation has not been performed. Report problems through [Issues](https://github.com/lorcinv/OmiReader/issues).
 
 ## Credits and license
 

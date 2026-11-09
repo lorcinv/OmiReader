@@ -17,6 +17,7 @@ import io.legado.app.help.config.ReadBookConfig
 import io.legado.app.help.coroutine.Coroutine
 import io.legado.app.model.ImageProvider
 import io.legado.app.model.ReadBook
+import io.legado.app.model.localBook.LocalBookLinks
 import io.legado.app.ui.book.read.page.entities.TextChapter
 import io.legado.app.ui.book.read.page.entities.TextLine
 import io.legado.app.ui.book.read.page.entities.TextPage
@@ -84,6 +85,7 @@ class TextChapterLayout(
     private val pageAnim = book.getPageAnim()
 
     private var pendingTextPage = TextPage()
+    private var paragraphLinks: LocalBookLinks.Paragraph? = null
 
     private val bookChapter inline get() = textChapter.chapter
     private val displayTitle inline get() = textChapter.title
@@ -236,9 +238,12 @@ class TextChapterLayout(
 
         val sb = StringBuffer()
         var isSetTypedImage = false
-        contents.forEach { content ->
+        contents.forEachIndexed { paragraphIndex, content ->
             currentCoroutineContext().ensureActive()
+            val sourceLinks = bookContent.localLinks.getOrNull(paragraphIndex)
+            paragraphLinks = sourceLinks
             if (isTextImageStyle) {
+                paragraphLinks = sourceLinks?.collapseImages(content)
                 //图片样式为文字嵌入类型
                 var text = content.replace(ChapterProvider.srcReplaceChar, "▣")
                 val srcList = LinkedList<String>()
@@ -272,6 +277,7 @@ class TextChapterLayout(
                     while (matcher.find()) {
                         currentCoroutineContext().ensureActive()
                         val text = content.substring(start, matcher.start())
+                        paragraphLinks = sourceLinks?.slice(start, matcher.start())
                         if (text.isNotBlank()) {
                             setTypeText(
                                 book,
@@ -283,6 +289,7 @@ class TextChapterLayout(
                                 isFirstLine = start == 0
                             )
                         }
+                        paragraphLinks = sourceLinks?.slice(matcher.start(), matcher.end())
                         setTypeImage(
                             book,
                             matcher.group(1)!!,
@@ -295,6 +302,7 @@ class TextChapterLayout(
                 }
                 if (start < content.length) {
                     val text = content.substring(start, content.length)
+                    paragraphLinks = sourceLinks?.slice(start, content.length)
                     if (text.isNotBlank()) {
                         if (isSingleImageStyle && isSetTypedImage) {
                             isSetTypedImage = false
@@ -402,6 +410,7 @@ class TextChapterLayout(
             )
             calcTextLinePosition(textPages, textLine, stringBuilder.length)
             stringBuilder.append(" ") // 确保翻页时索引计算正确
+            paragraphLinks?.anchors?.keys?.forEach { textChapter.localAnchors.putIfAbsent(it, textLine.chapterPosition) }
             pendingTextPage.addLine(textLine)
         }
         if (!imageOnly) durY += textHeight * paragraphSpacing / 10f
@@ -529,6 +538,18 @@ class TextChapterLayout(
                 textLine.isLeftLine = absStartX < viewWidth / 2
             }
             calcTextLinePosition(textPages, textLine, stringBuilder.length)
+            if (!isTitle) paragraphLinks?.let { info ->
+                var at = lineStart
+                textLine.columns.forEach { column ->
+                    if (column is TextColumn) { column.linkTarget = info.linkAt(at); at += column.charData.length }
+                    else at++
+                }
+                info.anchors.forEach { (target, offset) ->
+                    if (offset >= lineStart && (offset < lineEnd || (lineIndex == layout.lineCount - 1 && offset == lineEnd))) {
+                        textChapter.localAnchors.putIfAbsent(target, textLine.chapterPosition + offset - lineStart)
+                    }
+                }
+            }
             stringBuilder.append(lineText)
             textLine.upTopBottom(durY, textHeight, fontMetrics)
             val textPage = pendingTextPage

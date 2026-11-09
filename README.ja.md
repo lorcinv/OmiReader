@@ -4,7 +4,7 @@
 
 [简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md)
 
-[APK をダウンロード](https://github.com/lorcinv/OmiReader/releases/latest) · [v1.1.2](https://github.com/lorcinv/OmiReader/releases/tag/v1.1.2)
+[APK をダウンロード](https://github.com/lorcinv/OmiReader/releases/latest) · [v1.1.3](https://github.com/lorcinv/OmiReader/releases/tag/v1.1.3)
 
 Android 5.0+ · TXT / EPUB / MOBI / AZW3 / DOCX / Markdown · GPL-3.0
 
@@ -23,7 +23,7 @@ OmiReader は、端末内の本を中心に読めるシンプルな Android 電�
 
 - **本棚の整理**：上部の本棚タブ、仮想フォルダー、重ねた表紙。リスト表示と 2～6 列のグリッドに対応し、長押しで整理や並べ替えができます。複数ページになるとページ切り替えボタンが表示されます。
 - **細かな読書設定**：フォント、文字サイズ、太さ、行間、字間、段落間隔、字下げ、余白、ページの色と背景を調整できます。ミスト・ノルド・サンド・ナイトの 4 つの Omi テーマを用意しています。
-- **読みたい場所へ移動**：下から開くパネルで目次としおりを切り替えます。しおりボタンは右上に固定され、進捗バーを動かすとページ番号が変わります。本ごとに読書位置を保存します。
+- **読みたい場所へ移動**：下から開くパネルで目次としおりを切り替えます。EPUB・MOBI / AZW3 の本文中の目次リンクから、章や指定の段落へ移動できます。しおりボタンは右上に固定され、進捗バーを動かすとページ番号が変わります。本ごとに読書位置を保存します。
 - **シンプルな画面**：読書ツールは 1 列に配置し、全画面表示にも対応。下部ナビゲーションは未選択時がグレー、選択時が明るく表示されます。広告 SDK はなく、アカウント登録も不要です。
 - **必要なときだけ接続**：互換性のある Legado 3.0 形式の JSON ソースルールを取り込み、書籍を検索できます。自分で設定した WebDAV サーバーでバックアップ、復元、同期が可能です。第三者の書籍ソースや書籍は同梱していません。
 
@@ -41,7 +41,7 @@ OmiReader は、端末内の本を中心に読めるシンプルな Android 電�
 
 ## 使い方
 
-1. [Releases](https://github.com/lorcinv/OmiReader/releases/latest) から APK をダウンロードしてインストールします。1.1.2 は以前の OmiReader と同じ署名を使用しており、上書き更新ができます。
+1. [Releases](https://github.com/lorcinv/OmiReader/releases/latest) から APK をダウンロードしてインストールします。1.1.3 は以前の OmiReader と同じ署名を使用しており、上書き更新ができます。
 2. 本棚上部の「＋」から端末内の本を選びます。「その他」には一括取り込みと表示設定があります。
 3. 読書ページの中央をタップするとツールバーが開きます。「読書設定」で文字組みやページの色を調整できます。
 4. 本棚やフォルダーを作るときは、名前を入力して右上の「完了」で保存します。
@@ -55,7 +55,7 @@ OmiReader は、端末内の本を中心に読めるシンプルな Android 電�
 
 アプリとプロジェクトの説明は簡体字中国語、繁体字中国語、英語、日本語に対応しています。ビルド、署名、アイコン生成は [BUILDING.md](docs/BUILDING.md)、更新内容は [CHANGELOG.md](CHANGELOG.md) を参照してください。
 
-1.1.2 は Android エミュレーターの 31 項目の検証を通過し、本と読書位置を保持した上書き更新も確認しています。実機での検証は行っていません。不具合は [Issues](https://github.com/lorcinv/OmiReader/issues) へお寄せください。
+1.1.3 は、書籍内リンク、アンカー、既存の読書機能を含む Android エミュレーターの 36 項目の検証を通過しました。本と読書位置を保持した上書き更新も確認しています。実機での検証は行っていません。不具合は [Issues](https://github.com/lorcinv/OmiReader/issues) へお寄せください。
 
 ## 謝辞とライセンス
 

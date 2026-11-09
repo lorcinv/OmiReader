@@ -48,6 +48,12 @@ class MobiFile(var book: Book) {
         }
 
         @Synchronized
+        fun getContentForLink(book: Book, chapter: BookChapter, target: String): String? = getMFile(book).getContent(chapter, target)
+
+        @Synchronized
+        fun resolveLink(book: Book, target: String): LocalBookLinks.Destination? = getMFile(book).resolveLink(target)
+
+        @Synchronized
         override fun getImage(book: Book, href: String): InputStream? {
             return getMFile(book).getImage(href)
         }
@@ -177,36 +183,35 @@ class MobiFile(var book: Book) {
         return chapterList
     }
 
-    private fun getContent(chapter: BookChapter): String? {
+    private fun getContent(chapter: BookChapter, target: String? = null): String? {
         return when (val book = mobiBook) {
-            is KF8Book -> getContentKF8(book, chapter)
-            is KF6Book -> getContentKF6(book, chapter)
+            is KF8Book -> getContentKF8(book, chapter, target)
+            is KF6Book -> getContentKF6(book, chapter, target)
             else -> error("impossible condition")
         }
     }
 
-    private fun getContentKF6(kf6Book: KF6Book, chapter: BookChapter): String? {
+    private fun getContentKF6(kf6Book: KF6Book, chapter: BookChapter, target: String? = null): String? {
         if (chapter.isVolume && chapter.url.startsWith("skip:")) return ""
-        var section = kf6Book.getSectionByHref(chapter.url) ?: return null
-        val nextSectionHref = chapter.getVariable("nextUrl")
-
-        val sb = StringBuilder()
-        sb.append(kf6Book.getSectionText(section))
-        while (true) {
-            section = section.next ?: break
-            if (section.href == nextSectionHref) {
-                break
-            }
-            if (kf6Book.sectionIdMap[section.index] != null) {
-                break
-            }
-            sb.append(kf6Book.getSectionText(section))
+        kf6Book.getSectionByHref(chapter.url) ?: return null
+        val start = LocalBookLinks.mobiPointer(chapter.url).substringAfter("filepos:").toIntOrNull() ?: return null
+        val next = LocalBookLinks.mobiPointer(chapter.getVariable("nextUrl")).substringAfter("filepos:").toIntOrNull()
+        val bytes = kf6Book.getTextRecordInputStream().use { input ->
+            val end = next?.takeIf { it > start }?.coerceAtMost(input.available()) ?: input.available()
+            require(start in 0..end)
+            input.skip(start.toLong())
+            ByteArray(end - start).also { java.io.DataInputStream(input).readFully(it) }
         }
-
-        val soup = Jsoup.parse(sb.toString())
+        var html = String(bytes, kf6Book.charset)
+        val offset = target?.takeIf { !it.contains('#') }?.let(LocalBookLinks::mobiPointer)?.substringAfter("filepos:")?.toIntOrNull()
+        if (offset != null && offset in start until start + bytes.size) {
+            html = LocalBookLinks.insertAnchor(html, String(bytes, 0, offset - start, kf6Book.charset).length, target)
+        }
+        val soup = Jsoup.parse(html.replace(KF6Book.mbpPagebreakRegex, ""))
 
         soup.select("title").remove()
         soup.select("[style*=display:none]").remove()
+        LocalBookLinks.mark(soup.body(), chapter.url, mobi = true)
         soup.select("img[recindex]").forEach {
             val recindex = it.attr("recindex")
             it.clearAttributes()
@@ -216,14 +221,16 @@ class MobiFile(var book: Book) {
         return format(soup.outerHtml())
     }
 
-    private fun getContentKF8(kf8Book: KF8Book, chapter: BookChapter): String? {
+    private fun getContentKF8(kf8Book: KF8Book, chapter: BookChapter, target: String? = null): String? {
         if (chapter.isVolume && chapter.url.startsWith("skip:")) return ""
         var section = kf8Book.getSectionByHref(chapter.url) ?: return null
         val nextSectionHref = chapter.getVariable("nextUrl")
         val nextPos = kf8Book.parsePosURI(nextSectionHref)
 
         val sb = StringBuilder()
-        sb.append(kf8Book.getTextByHref(chapter.url, nextSectionHref))
+        val anchor = target?.takeIf { !it.contains('#') }?.let(kf8Book::parsePosURI)
+        val marker = target?.let(LocalBookLinks::anchor).orEmpty()
+        sb.append(kf8Book.getTextByHref(chapter.url, nextSectionHref, anchor, marker))
         while (true) {
             if (nextPos != null && section.frags.any { it.index == nextPos.fid }) {
                 break
@@ -238,19 +245,20 @@ class MobiFile(var book: Book) {
             if (kf8Book.sectionIdMap[section.index] != null) {
                 break
             }
-            sb.append(kf8Book.getSectionText(section))
+            sb.append(kf8Book.getSectionText(section, anchor, marker))
         }
 
         val soup = Jsoup.parse(sb.toString())
 
         soup.select("title").remove()
         soup.select("[style*=display:none]").remove()
+        LocalBookLinks.mark(soup.body(), chapter.url, mobi = true)
 
         return format(soup.outerHtml())
     }
 
     private fun format(html: String): String {
-        return HtmlFormatter.formatKeepImg(html)
+        return LocalBookLinks.VERSION + HtmlFormatter.formatKeepImg(html)
             .replace(xmlDeclarationRegex, "")
             .replace(doctypeDeclarationRegex, "")
     }
@@ -261,6 +269,34 @@ class MobiFile(var book: Book) {
             is KF6Book -> getImageKF6(book, href)
             else -> error("impossible condition")
         }
+    }
+
+    private fun resolveLink(target: String): LocalBookLinks.Destination? {
+        val pointer = LocalBookLinks.mobiPointer(target).takeIf { it.isNotEmpty() } ?: return null
+        val chapters = io.legado.app.data.appDb.bookChapterDao.getChapterList(book.bookUrl).filterNot { it.url.startsWith("skip:") }
+        chapters.firstOrNull { LocalBookLinks.mobiPointer(it.url) == pointer }?.let {
+            return LocalBookLinks.Destination(it.index, target.takeIf { value -> value.contains('#') })
+        }
+        val selected = when (val document = mobiBook) {
+            is KF6Book -> {
+                document.getSectionByHref(pointer) ?: return null
+                val at = pointer.substringAfter("filepos:").toIntOrNull() ?: return null
+                chapters.mapNotNull { chapter ->
+                    val start = LocalBookLinks.mobiPointer(chapter.url).substringAfter("filepos:").toIntOrNull() ?: return@mapNotNull null
+                    if (start <= at) chapter to start else null
+                }.maxByOrNull { it.second }?.first
+            }
+            is KF8Book -> {
+                document.getSectionByHref(pointer) ?: return null
+                val at = document.parsePosURI(pointer) ?: return null
+                chapters.mapNotNull { chapter ->
+                    val start = document.parsePosURI(chapter.url) ?: return@mapNotNull null
+                    if (start.fid < at.fid || (start.fid == at.fid && start.offset <= at.offset)) Triple(chapter, start.fid, start.offset) else null
+                }.maxWithOrNull(compareBy<Triple<BookChapter, Int, Int>> { it.second }.thenBy { it.third })?.first
+            }
+            else -> null
+        } ?: return null
+        return LocalBookLinks.Destination(selected.index, target)
     }
 
     private fun getImageKF6(kf6Book: KF6Book, href: String): InputStream? {

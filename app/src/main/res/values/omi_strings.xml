@@ -123,4 +123,5 @@
     <string name="omi_sources_help">Import and enable a source, then search by title or author. Imported sources stay in the source manager. No book sources are included.</string>
     <string name="omi_disclaimer">Disclaimer</string>
     <string name="omi_disclaimer_text">OmiReader is a reading and source-rule tool. Books and access depend on the sites configured in your imported rules. Use authorized content and follow the relevant site rules and copyright requirements.\n\nSource rules can run parsing scripts and connect to their configured sites. Import rules you trust and avoid sharing unrelated private information.\n\nWebDAV uses the server and account you configure to back up and sync data directly. Backups can contain your library, reading progress and source rules. Choose your own trusted service and protect its credentials.</string>
+    <string name="omi_link_unavailable">Unable to find the destination in this book</string>
 </resources>

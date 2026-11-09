@@ -73,6 +73,9 @@ class EpubFile(var book: Book) {
         fun clear() {
             eFile = null
         }
+
+        @Synchronized
+        fun resolveLink(book: Book, target: String): LocalBookLinks.Destination? = getEFile(book).resolveLink(target)
     }
 
     private var mCharset: Charset = Charset.defaultCharset()
@@ -176,7 +179,7 @@ class EpubFile(var book: Book) {
             elements.select("rp, rt").remove()
         }
         val html = elements.outerHtml()
-        return HtmlFormatter.formatKeepImg(html)
+        return LocalBookLinks.VERSION + HtmlFormatter.formatKeepImg(html)
     }
 
     private fun getBody(res: Resource, startFragmentId: String?, endFragmentId: String?): Element {
@@ -228,6 +231,7 @@ class EpubFile(var book: Book) {
         if (bodyString != originBodyString) {
             bodyElement = Jsoup.parse(bodyString).body()
         }
+        LocalBookLinks.mark(bodyElement, res.href)
         /*选择去除正文中的H标签，部分书籍标题与阅读标题重复待优化*/
         val tag = Book.hTag
         if (book.getDelTag(tag)) {
@@ -253,6 +257,46 @@ class EpubFile(var book: Book) {
         if (href == "cover.jpeg") return epubBook?.coverImage?.inputStream
         val abHref = URLDecoder.decode(href, "UTF-8")
         return epubBook?.resources?.getByHref(abHref)?.inputStream
+    }
+
+    private fun resolveLink(target: String): LocalBookLinks.Destination? {
+        val canonical = LocalBookLinks.epubTarget("", target) ?: return null
+        val uri = URI(canonical)
+        val chapters = io.legado.app.data.appDb.bookChapterDao.getChapterList(book.bookUrl)
+        chapters.firstOrNull { LocalBookLinks.epubTarget("", it.url) == canonical && !it.isVolume }?.let {
+            return LocalBookLinks.Destination(it.index)
+        }
+        if (uri.fragment == null) {
+            chapters.firstOrNull { !it.isVolume && LocalBookLinks.epubTarget("", it.url)?.substringBefore('#') == canonical }?.let {
+                return LocalBookLinks.Destination(it.index)
+            }
+        }
+        val resources = epubBookContents ?: return null
+        val resourceIndex = resources.indexOfFirst { LocalBookLinks.epubTarget("", it.href)?.substringBefore('#') == canonical.substringBefore('#') }
+        if (resourceIndex < 0) return null
+        val root = Jsoup.parse(String(resources[resourceIndex].data, mCharset))
+        fun order(fragment: String?): Int {
+            if (fragment.isNullOrEmpty()) return 0
+            val node = root.getElementById(fragment) ?: root.select("a[name]").firstOrNull { it.attr("name") == fragment } ?: return -1
+            return root.allElements.indexOf(node)
+        }
+        val targetOrder = order(uri.fragment)
+        if (uri.fragment != null && targetOrder < 0) return null
+        val candidates = chapters.mapNotNull { chapter ->
+            val start = LocalBookLinks.epubTarget("", chapter.url) ?: return@mapNotNull null
+            val index = resources.indexOfFirst { LocalBookLinks.epubTarget("", it.href)?.substringBefore('#') == start.substringBefore('#') }
+            if (index < 0 || index > resourceIndex) return@mapNotNull null
+            val startOrder = if (index == resourceIndex) order(chapter.startFragmentId ?: URI(start).fragment) else 0
+            if (index == resourceIndex && uri.fragment != null && startOrder > targetOrder) return@mapNotNull null
+            Triple(chapter, index, startOrder)
+        }
+        val selected = candidates.maxWithOrNull(compareBy<Triple<BookChapter, Int, Int>> { it.second }.thenBy { it.third }.thenBy { !it.first.isVolume })?.first
+            ?: chapters.firstOrNull { LocalBookLinks.epubTarget("", it.url)?.substringBefore('#') == canonical.substringBefore('#') }
+            ?: return null
+        val start = LocalBookLinks.epubTarget("", selected.url)
+        val atStart = start == canonical || (uri.fragment == null && start?.substringBefore('#') == canonical) ||
+            (uri.fragment != null && uri.fragment == selected.startFragmentId && start?.substringBefore('#') == canonical.substringBefore('#'))
+        return LocalBookLinks.Destination(selected.index, if (atStart) null else canonical)
     }
 
     private fun upBookCover(fastCheck: Boolean = false) {

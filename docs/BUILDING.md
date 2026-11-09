@@ -53,9 +53,9 @@ Build and install the matching debug app and instrumentation APK on an emulator 
 .\tools\test-android.ps1 -Adb 'C:\path\to\adb.exe' -Serial 'emulator-5554'
 ```
 
-The five Omi test groups cover navigation/themes, local formats, library/reader interactions, source rules, and rich documents. Version 1.1.2 passed 31 emulator tests; this is not a physical-device test result.
+The six Omi test groups cover navigation/themes, local formats, library/reader interactions, source rules, in-book link navigation, and rich documents. Version 1.1.3 passed 36 emulator tests, including native-page taps on EPUB, KF6 and KF8 contents links and anchors. This is not a physical-device test result.
 
-五组检查涵盖导航与主题、本地格式、书架与阅读交互、书源规则、富文本文档。1.1.2 的 31 项结果来自模拟器。
+六组检查涵盖导航与主题、本地格式、书架与阅读交互、书源规则、书内链接跳转和富文本文档。1.1.3 的 36 项模拟器检查包括实际点击 EPUB、KF6 和 KF8 原生阅读页中的目录链接与锚点。
 
 ## Icons / 图标
 

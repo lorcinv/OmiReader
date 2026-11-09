@@ -235,6 +235,7 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
         var handled = false
         touch(x, y) { _, textPos, textPage, textLine, column ->
             when (column) {
+                is TextColumn -> column.linkTarget?.let { handled = callBack.onLocalBookLink(it) }
                 is ButtonColumn -> {
                     context.toastOnUi("Button Pressed!")
                     handled = true
@@ -704,6 +705,7 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
     }
 
     interface CallBack {
+        fun onLocalBookLink(target: String): Boolean
         val headerHeight: Int
         val pageFactory: TextPageFactory
         val pageDelegate: PageDelegate?

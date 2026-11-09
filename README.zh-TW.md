@@ -4,7 +4,7 @@
 
 [简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md)
 
-[下載安裝包](https://github.com/lorcinv/OmiReader/releases/latest) · [v1.1.2](https://github.com/lorcinv/OmiReader/releases/tag/v1.1.2)
+[下載安裝包](https://github.com/lorcinv/OmiReader/releases/latest) · [v1.1.3](https://github.com/lorcinv/OmiReader/releases/tag/v1.1.3)
 
 Android 5.0+ · TXT / EPUB / MOBI / AZW3 / DOCX / Markdown · GPL-3.0
 
@@ -23,7 +23,7 @@ OmiReader 是一款簡潔的 Android 電子書閱讀器，以本機書籍為主�
 
 - **整理書架**：頂部分類、虛擬資料夾與封面疊放；支援 2–6 欄與清單版面、長按整理及拖曳排序。書籍超過一頁時顯示翻頁膠囊。
 - **調整閱讀**：字型、字級、粗細、行距、字距、段距、縮排、頁邊距、書頁顏色與背景皆可設定。提供霧藍、北境、暖沙、夜色四套 Omi 主題。
-- **快速定位**：底部目錄面板可切換章節與書籤；頂部固定書籤按鈕，進度條顯示即時頁碼，每本書獨立保存續讀位置。
+- **快速定位**：底部目錄面板可切換章節與書籤；EPUB、MOBI / AZW3 正文中的目錄連結可跳至章節或指定段落。頂部固定書籤按鈕，進度條顯示即時頁碼，每本書獨立保存續讀位置。
 - **簡潔介面**：單排閱讀工具、沉浸式全螢幕、灰色未選中底部導覽與清楚的目前狀態。沒有廣告 SDK，不要求註冊帳號。
 - **可選連線**：匯入相容閱讀 3.0 的 JSON 書源並搜尋書籍；使用自行設定的 WebDAV 服務備份、還原及同步。應用程式不預設第三方書源或書籍內容。
 
@@ -41,7 +41,7 @@ OmiReader 是一款簡潔的 Android 電子書閱讀器，以本機書籍為主�
 
 ## 開始使用
 
-1. 從 [Releases](https://github.com/lorcinv/OmiReader/releases/latest) 下載 APK 並安裝。1.1.2 沿用先前版本簽章，可覆蓋升級。
+1. 從 [Releases](https://github.com/lorcinv/OmiReader/releases/latest) 下載 APK 並安裝。1.1.3 沿用先前版本簽章，可覆蓋升級。
 2. 點選書架頂部加號以選擇本機書籍；更多選單提供批次匯入與書架顯示選項。
 3. 輕點閱讀頁面中央顯示工具列；「閱讀設定」保留完整排版與書頁顏色選項。
 4. 建立書架或資料夾時，輸入名稱後點選右上角「完成」儲存。
@@ -55,7 +55,7 @@ OmiReader 是一款簡潔的 Android 電子書閱讀器，以本機書籍為主�
 
 應用程式與專案說明支援簡體中文、繁體中文、英文與日文。建置、簽章與圖示產生方式見 [BUILDING.md](docs/BUILDING.md)，版本紀錄見 [CHANGELOG.md](CHANGELOG.md)。
 
-1.1.2 已通過 31 項 Android 模擬器檢查，並驗證覆蓋升級保留書籍與進度；尚未經實機驗證。遇到問題請提交 [Issue](https://github.com/lorcinv/OmiReader/issues)。
+1.1.3 已通過 36 項 Android 模擬器檢查，包含書內連結、錨點定位與原有閱讀功能，並驗證覆蓋升級保留書籍與進度；尚未經實機驗證。遇到問題請提交 [Issue](https://github.com/lorcinv/OmiReader/issues)。
 
 ## 來源與授權
 

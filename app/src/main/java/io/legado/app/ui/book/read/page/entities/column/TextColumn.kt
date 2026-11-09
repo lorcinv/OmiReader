@@ -29,6 +29,7 @@ data class TextColumn(
             }
             field = value
         }
+    var linkTarget: String? = null
     var isSearchResult: Boolean = false
         set(value) {
             if (field != value) {
@@ -48,7 +49,7 @@ data class TextColumn(
         } else {
             ChapterProvider.contentPaint
         }
-        val textColor = if (textLine.isReadAloud || isSearchResult) {
+        val textColor = if (textLine.isReadAloud || isSearchResult || linkTarget != null) {
             ThemeStore.accentColor
         } else {
             ReadBookConfig.textColor
@@ -64,6 +65,7 @@ data class TextColumn(
         } else {
             canvas.drawText(charData, start, y, textPaint)
         }
+        if (linkTarget != null) canvas.drawLine(start, y + textPaint.textSize * .10f, end, y + textPaint.textSize * .10f, textPaint)
         if (selected) {
             canvas.drawRect(start, 0f, end, textLine.height, view.selectedPaint)
         }

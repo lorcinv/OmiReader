@@ -99,13 +99,13 @@ class KF8Book(
         }
     }
 
-    fun getTextByHref(href: String, nextHref: String): String {
+    fun getTextByHref(href: String, nextHref: String, anchor: KF8Pos? = null, marker: String = ""): String {
         val pos = parsePosURI(href) ?: return ""
-        val nextPos = parsePosURI(nextHref) ?: return ""
+        val nextPos = parsePosURI(nextHref)
         val index = getIndexByFID(pos.fid)
-        val nextIndex = getIndexByFID(nextPos.fid)
+        val nextIndex = nextPos?.let { getIndexByFID(it.fid) } ?: -1
         val startFid = pos.fid
-        val endFid = if (index == nextIndex) nextPos.fid else Int.MAX_VALUE
+        val endFid = if (index == nextIndex) nextPos!!.fid else Int.MAX_VALUE
         val section = sections[index]
         val skel = section.skeleton
         val droppedFrags = section.frags.filter { it.index < startFid }
@@ -114,15 +114,21 @@ class KF8Book(
         val length = skel.length + frags.sumOf { it.length }
         val raw = getRaw(skel.offset, section.length)
         val lastFragDroppedLength =
-            if (index == nextIndex) frags.last().length - nextPos.offset else 0
+            if (index == nextIndex) frags.last().length - nextPos!!.offset else 0
         val skeleton = ByteArray(length - pos.offset - lastFragDroppedLength)
         var leftBytes = skeleton.size
         raw.copyInto(skeleton, 0, 0, skel.length)
         leftBytes -= skel.length
+        var anchorByte: Int? = null
         for ((i, frag) in frags.withIndex()) {
             val isFirstFrag = i == 0
             val isLastFrag = i == frags.lastIndex
             val insertOffset = frag.insertOffset - skel.offset - droppedFragsLength
+            val from = if (isFirstFrag) pos.offset else 0
+            val to = frag.length - if (isLastFrag) lastFragDroppedLength else 0
+            val added = to - from
+            anchorByte = anchorByte?.let { if (it >= insertOffset) it + added else it }
+            if (anchor?.fid == frag.index && anchor.offset in from..to) anchorByte = insertOffset + anchor.offset - from
             val offset = skel.length + frag.offset
             skeleton.copyInto(
                 skeleton,
@@ -140,15 +146,15 @@ class KF8Book(
             )
             leftBytes -= frag.length -
                     (if (isFirstFrag) pos.offset else 0) -
-                    (if (isLastFrag && index == nextIndex) nextPos.offset else 0)
+                    (if (isLastFrag && index == nextIndex) nextPos!!.offset else 0)
             if (isFirstFrag) {
                 droppedFragsLength += pos.offset
             }
         }
-        return String(skeleton, charset)
+        return withAnchor(skeleton, anchorByte, marker)
     }
 
-    fun getSectionText(section: KF8Section): String {
+    fun getSectionText(section: KF8Section, anchor: KF8Pos? = null, marker: String = ""): String {
         val skel = section.skeleton
         val frags = section.frags
         val length = section.length
@@ -157,8 +163,11 @@ class KF8Book(
         var leftBytes = raw.size
         raw.copyInto(skeleton, 0, 0, skel.length)
         leftBytes -= skel.length
+        var anchorByte: Int? = null
         for (frag in frags) {
             val insertOffset = frag.insertOffset - skel.offset
+            anchorByte = anchorByte?.let { if (it >= insertOffset) it + frag.length else it }
+            if (anchor?.fid == frag.index && anchor.offset in 0..frag.length) anchorByte = insertOffset + anchor.offset
             val offset = skel.length + frag.offset
             skeleton.copyInto(
                 skeleton,
@@ -169,7 +178,16 @@ class KF8Book(
             raw.copyInto(skeleton, insertOffset, offset, offset + frag.length)
             leftBytes -= frag.length
         }
-        return String(skeleton, charset)
+        return withAnchor(skeleton, anchorByte, marker)
+    }
+
+    private fun withAnchor(bytes: ByteArray, position: Int?, marker: String): String {
+        val html = String(bytes, charset)
+        if (position == null || marker.isEmpty()) return html
+        var at = String(bytes, 0, position.coerceIn(0, bytes.size), charset).length
+        val opening = html.lastIndexOf('<', at.coerceAtMost(html.lastIndex))
+        if (opening > html.lastIndexOf('>', at.coerceAtMost(html.lastIndex))) at = opening
+        return html.substring(0, at) + marker + html.substring(at)
     }
 
     private fun getRaw(offset: Int, len: Int): ByteArray {

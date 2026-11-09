@@ -14,6 +14,7 @@ import io.legado.app.data.entities.BookSource
 import io.legado.app.help.config.AppConfig
 import io.legado.app.model.analyzeRule.AnalyzeUrl
 import io.legado.app.model.localBook.LocalBook
+import io.legado.app.model.localBook.LocalBookLinks
 import io.legado.app.utils.ArchiveUtils
 import io.legado.app.utils.FileUtils
 import io.legado.app.utils.ImageUtils
@@ -403,19 +404,25 @@ object BookHelp {
             book.getFolderName(),
             bookChapter.getFileName()
         )
+        var legacy: String? = null
         if (file.exists()) {
             val string = file.readText()
             if (string.isEmpty()) {
                 return null
             }
-            return string
+            if ((book.isEpub || book.isMobi) && !io.legado.app.model.localBook.ConvertedDocument.isConverted(book) && !string.startsWith(LocalBookLinks.VERSION)) {
+                legacy = string
+            } else return string
         }
         if (book.isLocal) {
-            val string = LocalBook.getContent(book, bookChapter)
-            if (string != null && book.isEpub) {
+            val string = try { LocalBook.getContent(book, bookChapter) } catch (error: Exception) {
+                if (legacy != null) return legacy
+                throw error
+            }
+            if (string != null && (book.isEpub || legacy != null)) {
                 saveText(book, bookChapter, string)
             }
-            return string
+            return string ?: legacy
         }
         return null
     }

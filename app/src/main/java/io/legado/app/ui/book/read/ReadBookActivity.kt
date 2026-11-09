@@ -1161,6 +1161,27 @@ class ReadBookActivity : BaseReadBookActivity(),
         }
     }
 
+    private var localBookLinkJob: Job? = null
+    override fun onLocalBookLink(target: String): Boolean {
+        val selected = ReadBook.book ?: return false
+        if (!selected.isLocal || (!selected.isEpub && !selected.isMobi)) return false
+        localBookLinkJob?.cancel()
+        localBookLinkJob = lifecycleScope.launch {
+            try {
+                val destination = LocalBookNavigation.find(selected, target)
+                ensureActive()
+                if (ReadBook.book?.bookUrl != selected.bookUrl) return@launch
+                if (destination == null) toastOnUi(getString(R.string.omi_link_unavailable))
+                else viewModel.openChapter(destination.chapter, destination.character)
+            } catch (cancelled: kotlinx.coroutines.CancellationException) { throw cancelled }
+            catch (error: Exception) {
+                AppLog.put("Local book link: ${error.localizedMessage}", error)
+                toastOnUi(getString(R.string.omi_link_unavailable))
+            }
+        }
+        return true
+    }
+
     /**
      * 打开搜索界面
      */
